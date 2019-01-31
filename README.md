@@ -136,7 +136,11 @@ We'll need to use JMeter to simulate some 500 users randomly using our `Counter`
 
 The `awk` part of the command is just to filter out summary information which will make the logs easier to read. The `x-plan.jmx` file is available in this repo and it looks like this:
 
-![]()
+![](https://github.com/rm511130/cpp-warmup-then-fast/blob/master/Jmeter-plan.png)
+
+So go ahead and start the JMeter window in your display and observe what it reports back:
+
+
 
 
 
