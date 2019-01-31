@@ -2,7 +2,7 @@ applications:
 - name: counter
 # random-route: true
   disk_quota: 1G
-  memory: 100M 
+  memory: 1G
   instances: 1
   buildpack: https://github.com/cloudfoundry-community/cppcms-buildpack
   health-check-type: port
