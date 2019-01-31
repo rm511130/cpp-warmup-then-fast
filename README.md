@@ -94,6 +94,38 @@ The log snippet shown above can be scrolled to show more details to the right-ha
 
 ![](https://github.com/rm511130/cpp-warmup-then-fast/blob/master/autorefresh.png)
    
-   
+13. Let's `ssh` into the container and using `ps -ef` let's see what is running:
+
+```
+$ cf ssh counter
+vcap@5ae32ebb-f7ea-4fa6-7647-38a9:~$ ps -ef
+UID          PID    PPID  C STIME TTY          TIME CMD
+root           1       0  0 03:02 ?        00:00:00 /tmp/garden-init
+vcap          18       0  0 03:02 ?        00:00:00 make run
+vcap          25       0  0 03:02 ?        00:00:00 /tmp/lifecycle/diego-sshd --allowedKeyExchanges= --address=0.0.0.0:2222 --allowUnauthenti
+catedClients=false --inheritDaemonEnv=true --allowedCiphers= --allowedMACs= --logLevel=fatal --debugAddr=
+vcap          64      18  0 03:02 ?        00:00:19 ./counter -c cppcms.js
+root          72       0  0 03:02 ?        00:00:00 sh -c trap 'kill -9 0' TERM; /etc/cf-assets/envoy/envoy -c /etc/cf-assets/envoy_config/en
+voy.yaml --service-cluster proxy-cluster --service-node proxy-node --drain-time-s 900 --log-level critical& pid=$!; wait $pid
+root         113      72  0 03:02 ?        00:02:59 /etc/cf-assets/envoy/envoy -c /etc/cf-assets/envoy_config/envoy.yaml --service-cluster pr
+oxy-cluster --service-node proxy-node --drain-time-s 900 --log-level critical
+root         132       0  0 03:02 ?        00:00:02 /etc/cf-assets/healthcheck/healthcheck -port=8080 -timeout=1000ms -liveness-interval=30s
+vcap         188      25  0 17:33 pts/0    00:00:00 /bin/bash
+vcap         199     188  0 17:38 pts/0    00:00:00 ps -ef
+```
+
+The line corresponding to PID 132 shows: `healthcheck -port=8080 -timeout=1000ms -liveness-interval=30s`  i.e. every 30 seconds, try to establish a tcp connection on port 8080, if successful within 1s, consider the App to be healthy - otherwise, consider the App to be unhealthy and `kill -9` it to prompt PCF to register the crash event and respawn a new container.
+
+_**Important to note:**_
+
+The `kill -9` means that anyone using that App Instance will see a broken pipe and experience a brief (under 1s) outage before PCF routers remove that App Instance from its valid routes table.
+
+The App crash event will be visible under `cf events counter` and `cf logs`.
+
+Even if we change `delay_in_subsequent_loops = 1100000` i.e. 1.1s, the App container itself will probably respond to the TCP connection request on port 8080 in well under 1s, so both the initial delay of 10s (`delay_in_microsecs = 10000000`) will also not be considered a problem. 
+
+The App may be at 100% CPU utilization, but `health-check-type = port` will probably not see it as a problem. 
+
+
 
 
