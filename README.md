@@ -116,15 +116,22 @@ vcap         199     188  0 17:38 pts/0    00:00:00 ps -ef
 
 The line corresponding to PID 132 shows: `healthcheck -port=8080 -timeout=1000ms -liveness-interval=30s`  i.e. every 30 seconds, try to establish a tcp connection on port 8080, if successful within 1s, consider the App to be healthy - otherwise, consider the App to be unhealthy and `kill -9` it to prompt PCF to register the crash event and respawn a new container.
 
-_**Important to note:**_
+_**Important Consequences to Note when using 'port' as your App's health-check-type**
 
-The `kill -9` means that anyone using that App Instance will see a broken pipe and experience a brief (under 1s) outage before PCF routers remove that App Instance from its valid routes table.
+(a) The `kill -9` means that anyone using that App Instance will see a broken-pipe and experience a brief (under 1s) outage before PCF routers remove that App Instance from its valid routes table.
 
-The App crash event will be visible under `cf events counter` and `cf logs`.
+(b) The App crash event will be visible under `cf events counter` and `cf logs`.
 
-Even if we change `delay_in_subsequent_loops = 1100000` i.e. 1.1s, the App container itself will probably respond to the TCP connection request on port 8080 in well under 1s, so both the initial delay of 10s (`delay_in_microsecs = 10000000`) will also not be considered a problem. 
+(c) Even if we change `delay_in_subsequent_loops = 1100000`, i.e. 1.1s, making the App respond in slightly over 1s, the container running the App will probably respond to the TCP connection request on port 8080 in well under 1s, so both the initial delay of 10s (`delay_in_microsecs = 10000000`) and subsequent responses in 1.1s will not be considered a problem. 
 
-The App may be at 100% CPU utilization, but `health-check-type = port` will probably not see it as a problem. 
+(d) The App may be reach 100% CPU utilization, but `health-check-type = port` will probably not see it as a problem, as long as the TCP connection to port 8080 is established within 1s.
+
+(e) If a container becomes unresponsive or an App memory leakage leads to an out-of-memory issue, the App will crash and PCF will respawn the App instance. **As soon as** the TCP connection to port 8080 is established on the new container, PCF will start routing traffic to the App instance and, in the example of this demo, the first access will take 10s (`delay_in_microsecs = 10000000`) before it sees any results.
+
+14. Let's experience what the Important Consequences mean:
+
+
+
 
 
 
