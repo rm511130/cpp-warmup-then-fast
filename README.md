@@ -92,8 +92,7 @@ The log snippet shown above can be scrolled to show more details to the right-ha
 
 12. Set the auto-refresh of the two browsers to hit *http://counter.apps.pcf4u.com* every 2 seconds. The response times should all be very close to 1s.
 
-
-
+![](https://github.com/rm511130/cpp-warmup-then-fast/blob/master/autorefresh.png)
    
    
 
