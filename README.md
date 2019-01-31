@@ -126,9 +126,17 @@ _**Important Consequences to Note when using 'port' as your App's health-check-t
 
 (d) The App may be reach 100% CPU utilization, but `health-check-type = port` will probably not see it as a problem, as long as the TCP connection to port 8080 is established within 1s.
 
-(e) If a container becomes unresponsive or an App memory leakage leads to an out-of-memory issue, the App will crash and PCF will respawn the App instance. **As soon as** the TCP connection to port 8080 is established on the new container, PCF will start routing traffic to the App instance and, in the example of this demo, the first access will take 10s (`delay_in_microsecs = 10000000`) before it sees any results.
+(e) If a container becomes unresponsive or an app memory leakage leads to an out-of-memory issue, the App/Container will crash and PCF will respawn the App instance in a new Container. **As soon as** the TCP connection to port 8080 is established on the new container, PCF will start routing traffic to it and, in the `Counter.cpp` example of this demo, the first request will take 10s (`delay_in_microsecs = 10000000`) before it sees any results - assuming that the App and its underlying Web Server are ready to respond.
 
-14. Let's experience what the Important Consequences mean:
+14. Let's experience what the Important Consequences (above) really mean:
+
+We'll need to use JMeter to simulate some 500 users randomly using our `Counter` App. The command is quite simple:
+
+`jmeter -n -t x-plan.jmx | awk '/Active/{ print $0; }'`
+
+The `awk` part of the command is just to filter out summary information which will make the logs easier to read. The `x-plan.jmx` file is available in this repo and it looks like this:
+
+![]()
 
 
 
