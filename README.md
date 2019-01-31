@@ -86,9 +86,11 @@ cf logs counter
    2019-01-30T22:14:14.90-0500 [RTR/2] OUT
 ```
 
-The log snippet shown above can be scrolled to show more details to the righthand side. Look for *response_time* and you will see a number very close to 10s. You can ignore the first line in the log shown above, it will be shown in red and it corresponds to a minor warning message of the *cppcms* system.
+The log snippet shown above can be scrolled to show more details to the right-hand side. Look for *response_time* and you will see a number very close to 10s. You can ignore the first line in the log shown above, it will be shown in red and it corresponds to a minor warning message of the *cppcms* system.
 
-11. Using the second browser, open the same page again *http://counter.apps.pcf4u.com* and check the *logs* to see that it now responded in about 1s. All consistent with the set-up we covered on Step 3.
+11. Using the second browser, open the same page again *http://counter.apps.pcf4u.com* and check the *logs* to see that it now responded in about 1s. All consistent with the set-up we covered on Step 3. 
+
+12. Set the auto-refresh of the two browsers to hit *http://counter.apps.pcf4u.com* every 2 seconds. The response times should all be very close to 1s.
 
 
 
