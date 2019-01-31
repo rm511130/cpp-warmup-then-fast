@@ -140,6 +140,8 @@ The `awk` part of the command is just to filter out summary information which wi
 
 So go ahead and start the JMeter window in your display and observe what it reports back:
 
+![](https://github.com/rm511130/cpp-warmup-then-fast/blob/master/1_500_port.png)
+
 
 
 
