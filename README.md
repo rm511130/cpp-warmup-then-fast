@@ -206,6 +206,45 @@ As the new App takes over, you should see the following changes:
 
 ![](https://github.com/rm511130/cpp-warmup-then-fast/blob/master/cf-zdt-push-3-blue.png)
 
+So let's think about what just happened:
+
+(a) The new blue-font Counter App takes 10s to warm-up, but it then responds in just 0.01s allowing a single instance to manage the same workload with a higher degree of %CPU utilization. By improving the App code we're able to make better use of the infrastructure.
+
+(b) Zero-downtime-push worked without any errors even though we did register a max response time of 10s at the beginning when the blue-font Counter App started to handle the JMeter requests.
+
+(c) The `cf logs counter` terminal window stoped working because it was linked to the GUID of the Counter App that was replaced and stopped. The consolidated logs continued to flow up and until the containers were terminated.
+
+(d) Once the new blue-font Counter App was running, you were able to re-issue the `cf logs counter` and it started to show logs for the new App.
+
+19. Scale the Blue-Font Counter App to 3 App Instances
+
+```$ cf scale counter -i 3```
+
+You should see an even distribution of the workload represented by smaller %CPU numbers in Apps Manager. During my tests I also saw a small improvement in the throughput: 100 responses/s.
+
+20. Let's simulate App Failure and see what happens
+
+(a) `cf ssh counter`
+
+(b) `ps -ef` and look for the PID for `./counter -c cppcms.js`
+
+(c) `kill -9 <PID of Counter App>` per the example shown below:
+
+![](https://github.com/rm511130/cpp-warmup-then-fast/blob/master/kill-9.png)
+
+What happens immediately after you issue the `kill -9` command is quite interesting:
+
+![](https://github.com/rm511130/cpp-warmup-then-fast/blob/master/kill-9-results.png)
+
+And seconds after that, here's a snapshot of what you should see:
+
+![](https://github.com/rm511130/cpp-warmup-then-fast/blob/master/kill-9-results-part2.png)
+
+
+
+
+
+
 
 
 
