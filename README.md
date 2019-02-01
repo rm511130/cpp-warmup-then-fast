@@ -175,7 +175,23 @@ We observed 83.1 responses/s to be the peak performance when 8 App Instances wer
 
 During my tests I did observe a handful of errors in the JMeter logs. The `plan1.csv` file holds the details. In every case, I was able to correlate the errors with network glitches reported by the router in my Lab Environment.
 
-![](https://github.com/rm511130/cpp-warmup-then-fast/blob/master/Network_Errors.png)
+![](https://github.com/rm511130/cpp-warmup-then-fast/blob/master/NetworkErrors.png)
+
+18. Let's change the Counter App a little and then use [cf zero-downtime-push](https://github.com/contraband/autopilot)
+
+(a) Switch-off autoscaling and scale manually to 8 App Instances (if not already there)
+(b) Edit your `counter.cpp` file and change `delay_in_subsequent_loops = 985000` to `delay_in_subsequent_loops = 10000`
+(c) And also change the `font color=\"black\"` to `font color=\"blue\"`
+(d) Save the changes to `counter.cp`
+(e) Keep the original `manifest.yml` content where you had specified `instances: 1` 
+(f) Last step - using the middle terminal window on your display, proceed with the following command:
+
+```cf zero-downtime-push counter -f manifest.yml```
+
+
+
+
+
 
 
 
