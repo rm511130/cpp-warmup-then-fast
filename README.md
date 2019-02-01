@@ -114,9 +114,9 @@ vcap         188      25  0 17:33 pts/0    00:00:00 /bin/bash
 vcap         199     188  0 17:38 pts/0    00:00:00 ps -ef
 ```
 
-The line corresponding to PID 132 shows: `healthcheck -port=8080 -timeout=1000ms -liveness-interval=30s`  i.e. every 30 seconds, try to establish a tcp connection on port 8080, if successful within 1s, consider the App to be healthy - otherwise, consider the App to be unhealthy and `kill -9` it to prompt PCF to register the crash event and respawn a new container.
+The line corresponding to PID 132 shows: `healthcheck -port=8080 -timeout=1000ms -liveness-interval=30s`  i.e. every 30 seconds, it will try to establish a tcp connection on port 8080, if successful within 1s, it will consider the App to be healthy - otherwise, the `healthcheck` code will consider the App to be unhealthy and `kill -9` it to prompt PCF to register the crash event and respawn a new container.
 
-_**Important Consequences to Note when using 'port' as your App's health-check-type**
+_**Important Consequences to Note when using 'port' as your App's health-check-type**_
 
 (a) The `kill -9` means that anyone using that App Instance will see a broken-pipe and experience a brief (under 1s) outage before PCF routers remove that App Instance from its valid routes table.
 
@@ -126,21 +126,32 @@ _**Important Consequences to Note when using 'port' as your App's health-check-t
 
 (d) The App may be reach 100% CPU utilization, but `health-check-type = port` will probably not see it as a problem, as long as the TCP connection to port 8080 is established within 1s.
 
-(e) If a container becomes unresponsive or an app memory leakage leads to an out-of-memory issue, the App/Container will crash and PCF will respawn the App instance in a new Container. **As soon as** the TCP connection to port 8080 is established on the new container, PCF will start routing traffic to it and, in the `Counter.cpp` example of this demo, the first request will take 10s (`delay_in_microsecs = 10000000`) before it sees any results - assuming that the App and its underlying Web Server are ready to respond.
+(e) If a container becomes unresponsive or an app memory leakage leads to an out-of-memory issue, the App/Container will crash and PCF will respawn the App instance in a new Container. **As soon as** the TCP connection to port 8080 is established on the new container, PCF will start routing traffic to it and, in our `Counter.cpp` example, the first request will take 10s (`delay_in_microsecs = 10000000`) before it sees any results - assuming that the App and its underlying Web Server are ready to respond. If the App is not ready to respond or is overwhelmed by a high number of requests it cannot handle, we may see an error.
 
-14. Let's experience what the Important Consequences (above) really mean:
+14. Let's experience what the "Important Consequences" (described above) really mean:
 
-We'll need to use JMeter to simulate some 500 users randomly using our `Counter` App. The command is quite simple:
+We'll need to use JMeter to simulate some hundreds of users randomly using our `Counter` App. The command is:
 
 `jmeter -n -t x-plan.jmx | awk '/Active/{ print $0; }'`
 
-The `awk` part of the command is just to filter out summary information which will make the logs easier to read. The `x-plan.jmx` file is available in this repo and it looks like this:
+The `awk` part of the command is just to filter out summary information which will make the logs easier to read. 
+The `x-plan.jmx` file is available in this repo and it looks like this:
 
 ![](https://github.com/rm511130/cpp-warmup-then-fast/blob/master/Jmeter-plan.png)
 
-So go ahead and start the JMeter window in your display and observe what it reports back:
+So go ahead and start the JMeter test-suite in the bottom window of your display and observe what it reports back:
 
 ![](https://github.com/rm511130/cpp-warmup-then-fast/blob/master/1_500_port.png)
+
+Some interesting facts we need to acknowledge from the sample data shown above:
+
+(a) Our test is using a single instance of our `Counter` App configured to have a warm-up period of 10s and to wait at least 985ms for subsequent requests.
+
+(b) The single instance of `Counter` is overwhelmed by the 500 concurrent users and is responding, in average, after 20s of having received the request. However, the %CPU utilization is relatively low.
+
+(c) No errors are being logged, so 100% of the user requests are being properly handled.
+
+15. Leave the test running and lets `cf ssh` into the container where the `Counter` App is running:
 
 
 
