@@ -9,6 +9,7 @@ The delays are easily changed. The goal is to create a set of steps that demonst
 - Your CF CLI is able to access https://github.com/cloudfoundry-community/cppcms-buildpack
 - You have Jmeter  `brew install jmeter --with-plugins`
 - You have a page auto-refresh plug-in for your [browser](https://chrome.google.com/webstore/detail/page-refresh/hmooaemjmediafeacjplpbpenjnpcneg?hl=en)
+- You have a recent CF CLI with the [Zero-Downtime-Push Plugin](https://github.com/contraband/autopilot)
 
 ## Let's get started
 
@@ -180,13 +181,32 @@ During my tests I did observe a handful of errors in the JMeter logs. The `plan1
 18. Let's change the Counter App a little and then use [cf zero-downtime-push](https://github.com/contraband/autopilot)
 
 (a) Switch-off autoscaling and scale manually to 8 App Instances (if not already there)
+
 (b) Edit your `counter.cpp` file and change `delay_in_subsequent_loops = 985000` to `delay_in_subsequent_loops = 10000`
+
 (c) And also change the `font color=\"black\"` to `font color=\"blue\"`
+
 (d) Save the changes to `counter.cp`
+
 (e) Keep the original `manifest.yml` content where you had specified `instances: 1` 
+
 (f) Last step - using the middle terminal window on your display, proceed with the following command:
 
 ```cf zero-downtime-push counter -f manifest.yml```
+
+You should see the following initial changes:
+
+![](https://github.com/rm511130/cpp-warmup-then-fast/blob/master/cf-zdt-push-1.png)
+
+Using your App Manager UI, look for the new App that is being spun up in the same targeted Space:
+
+![](https://github.com/rm511130/cpp-warmup-then-fast/blob/master/cf-zdt-push-2.png)
+
+As the new App takes over, you should see the following changes:
+
+![](https://github.com/rm511130/cpp-warmup-then-fast/blob/master/cf-zdt-push-3-blue.png)
+
+
 
 
 
