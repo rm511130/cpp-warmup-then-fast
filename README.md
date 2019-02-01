@@ -169,7 +169,15 @@ At 20 responses/s it takes 25s to allow all 500 concurrent users to get one resp
 
 ![](https://github.com/rm511130/cpp-warmup-then-fast/blob/master/Effects_of_Autoscaling.png)
 
-After a few minutes the overall system does stabilize at 8 App Instances with an average response time of 1.024s, a minimum response time of 1,001s and a max response time of 1,215s. If an App Instance is removed and later re-added by the autoscaling logic, we will see a max response time of 10s skewing the average up to 1.3s before it stabilizes again.
+After a few minutes the overall system does stabilize at 8 App Instances with an average response time of 1.024s, a minimum response time of 1,001s and a max response time of 1,215s. If an App Instance is removed and later re-added by the autoscaling logic, we will see a max response time of 10s skewing the average up to 1.3s before it stabilizes again. 
+
+We observed 83.1 responses/s to be the peak performance when 8 App Instances were actively handling the requests.
+
+During my tests I did observe a handful of errors in the JMeter logs. The `plan1.csv` file holds the details. In every case, I was able to correlate the errors with network glitches reported by the router in my Lab Environment.
+
+![](https://github.com/rm511130/cpp-warmup-then-fast/blob/master/Network_Errors.png)
+
+
 
 
 
