@@ -240,6 +240,21 @@ And seconds after that, here's a snapshot of what you should see:
 
 ![](https://github.com/rm511130/cpp-warmup-then-fast/blob/master/kill-9-results-part2.png)
 
+If you execute this test a few times, you will see that sometimes the JMeter logs will register anything from a handfull of errors to 200+ errors under very similar conditions. It just depends on how many concurrent requests were in flight or scheduled to be handled by the App that was killed.
+
+21. What happens when the JMeter App is less tolerant of delays
+
+(a) Edit the `x-plan.jmx` file to change the following two lines from 60s to just 0.5s as shown below. Note that 0.5s is 6x the average response time we had been observing until now.
+
+```
+<stringProp name="HTTPSampler.connect_timeout">500</stringProp>
+<stringProp name="HTTPSampler.response_timeout">500</stringProp>
+```
+
+(b) Re-start the JMeter tests against the 3 Blue-Font Counter App instances and observe the results:
+
+
+
 
 
 
