@@ -153,6 +153,18 @@ Some interesting facts we need to acknowledge from the sample data shown above:
 
 15. Leave the test running and lets `cf ssh` into the container where the `Counter` App is running:
 
+![](https://github.com/rm511130/cpp-warmup-then-fast/blob/master/top_n_topH.png)
+
+We can deduce that the 21 threads running `Counter` explain the 20 responses/s we saw in the JMeter logs.
+
+`Envoy` is doing all the hard work of handling the requests, and it's clearly using most of the CPU Time.
+
+At 20 responses/s it takes 25s to allow all 500 concurrent users to get one response to one of their requests.
+
+16. Let's switch on Autoscaling based on latency to get the response times down to less than 1500ms 
+
+
+
 
 
 
