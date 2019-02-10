@@ -6,7 +6,7 @@ These time delays are easily changed in the code. Our goal is to create a set of
 
 - You know how to use PCF and the [CF CLI](https://docs.cloudfoundry.org/cf-cli/install-go-cli.html) at a basic level - i.e. you have successfully pushed apps in the past.
 - You have access to a PCF (Org, Space) environment with enough quota to run this demo (20GB RAM).
-- You have [Jmeter](https://jmeter.apache.org/) i.e. `brew install jmeter --with-plugins`
+- You have [Java](https://www.java.com/en/) & [Jmeter](https://jmeter.apache.org/) i.e. `brew install jmeter --with-plugins`
 - You have a page auto-refresh plug-in for your [browser](https://chrome.google.com/webstore/detail/page-refresh/hmooaemjmediafeacjplpbpenjnpcneg?hl=en)
 - You have a recent [CF CLI](https://docs.cloudfoundry.org/cf-cli/install-go-cli.html) with the [Zero-Downtime-Push Plugin](https://github.com/contraband/autopilot)
 - You have the CF Recycle plugin i.e. `cf install-plugin -r CF-Community "cf-recycle-plugin"`
