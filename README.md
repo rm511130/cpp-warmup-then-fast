@@ -14,7 +14,7 @@ These time delays are easily changed in the code. Our goal is to create a set of
 
 ## An additional requirement
 
-- `cf buildpacks` produces a list that includes the `cppcms-buildpack.zip` buildpack, and it's enabled.
+- The `cf buildpacks` command produces a list that includes the `cppcms-buildpack.zip` buildpack, and it's enabled.
 - Otherwise, your Platform Administrator will have to:
 
   (1) Download the [cppcms-buildpack.zip](https://github.com/rm511130/cpp-warmup-then-fast/blob/master/cppcms-buildpack.zip) file 
