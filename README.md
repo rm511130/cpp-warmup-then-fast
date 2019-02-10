@@ -151,13 +151,13 @@ _**Important Consequences to Note when using 'port' as your App's health-check-t
 
 14. Let's experience what the "Important Consequences" (described above) really mean:
 
-We'll need to use JMeter to simulate some hundreds of users randomly using our `Counter` App. The command is:
+We'll need to use JMeter to simulate hundreds of users randomly using our `Counter` App. The command is:
 
 `jmeter -n -t x-plan.jmx | awk '/Active/{ print $0; }'`
 
 The `awk` part of the command is just to filter out summary information which will make the logs easier to read. 
 
-If using the JMeter GUI, simply `FILE > Open > x-plan.jmx` and click on the play button and switch to `Summary Report`
+If using the JMeter GUI, simply `FILE > Open > x-plan.jmx`, click on the play button and switch to `Summary Report`
 
 ![](https://github.com/rm511130/cpp-warmup-then-fast/blob/master/JmeterGUI.png)
 
@@ -211,7 +211,7 @@ During my tests I did observe a handful of errors in the JMeter logs. The `plan1
 
 (c) And also change the `font color=\"black\"` to `font color=\"blue\"`
 
-(d) Save the changes to `counter.cp`
+(d) Save the changes to `counter.cpp`
 
 (e) Keep the original `manifest.yml` content where you had specified `instances: 1` 
 
