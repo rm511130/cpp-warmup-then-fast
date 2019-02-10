@@ -10,15 +10,33 @@ These time delays are easily changed in the code. Our goal is to create a set of
 - You have a page auto-refresh plug-in for your [browser](https://chrome.google.com/webstore/detail/page-refresh/hmooaemjmediafeacjplpbpenjnpcneg?hl=en)
 - You have a recent [CF CLI](https://docs.cloudfoundry.org/cf-cli/install-go-cli.html) with the [Zero-Downtime-Push Plugin](https://github.com/contraband/autopilot)
 - You have the CF Recycle plugin i.e. `cf install-plugin -r CF-Community "cf-recycle-plugin"`
-- Your PC/Mac (CF CLI) is able to access https://github.com/cloudfoundry-community/cppcms-buildpack
-- If not, please make sure you have CF LOCAL `cf install-plugin -r CF-Community "cflocal"`
+
+## An additional requirement
+
+- `cf buildpacks` produces a list that includes the `cppcms-buildpack.zip` buildpack, and it's enabled.
+- Otherwise, your Platform Administrator will have to:
+
+  (1) Download the [cppcms-buildpack.zip](https://github.com/rm511130/cpp-warmup-then-fast/blob/master/cppcms-buildpack.zip) file 
+  
+  (2) Execute `cf create-buildpack cppcms-buildpack ~/Downloads/cppcms-buildpack.zip 21 --enable`
+  
+  - (2a) `~/Downloads/cppcms-buildpack.zip` is the location of my downloaded [cppcms-buildpack.zip](https://github.com/rm511130/cpp-warmup-then-fast/blob/master/cppcms-buildpack.zip) file 
+  
+  - (2b) `21` was the next available position where I decided to add the `cppcms-buildpack`
+  
+ - I'll proceed asuming that `cppcms-buildpack` is visible and enabled when you execute `cf builpacks`
+
+   However, if that is not the case but you have access to the [cppcms buildpack](https://github.com/cloudfoundry-community/cppcms-buildpack), you can use:
+   
+   `$ cf push counter -b https://github.com/cloudfoundry-community/cppcms-buildpack`
+
 
 ## Let's get started
 
 - `$ cd /work`  I'm using my `/work` directory
 - `$ git clone https://github.com/rm511130/cpp-warmup-then-fast`
 - `$ cd cpp-warmup-then-fast`
-- `$ cf push counter -b https://github.com/cloudfoundry-community/cppcms-buildpack --no-start` 
+- `$ cf push counter -b cppcms-buildpack --no-start` 
 
 Did it all work? If you can't access the cppcms-buildpack, you'll need to ask your PCF Ops team to make it available to you as an [offline buildpack.](https://docs.run.pivotal.io/buildpacks/depend-pkg-offline.html)
 
