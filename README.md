@@ -156,6 +156,11 @@ We'll need to use JMeter to simulate some hundreds of users randomly using our `
 `jmeter -n -t x-plan.jmx | awk '/Active/{ print $0; }'`
 
 The `awk` part of the command is just to filter out summary information which will make the logs easier to read. 
+
+If using the JMeter GUI, simply `FILE > Open > x-plan.jmx` and click on the play button and switch to `Summary Report`
+
+![](https://github.com/rm511130/cpp-warmup-then-fast/blob/master/JmeterGUI.png)
+
 The `x-plan.jmx` file is available in this repo and it looks like this:
 
 ![](https://github.com/rm511130/cpp-warmup-then-fast/blob/master/Jmeter-plan.png)
