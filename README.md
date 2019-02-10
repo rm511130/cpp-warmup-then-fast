@@ -1,6 +1,6 @@
 # cpp-warmup-then-fast
-C++ code to simulate a Monolithic App that takes 10s to warm-up, and subsequently responds in 1s.
-The delays are easily changed. The goal is to create a set of steps that demonstrate how PCF responds to these larger Apps.
+C++ code to simulate a Monolithic App that takes 10 seconds to warm-up, and subsequently responds in 1 second.
+These time delays are easily changed in the code. Our goal is to create a set of steps that demonstrate how PCF responds to these larger Apps.
 
 ## Assumptions to get started
 
