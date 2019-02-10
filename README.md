@@ -27,7 +27,7 @@ These time delays are easily changed in the code. Our goal is to create a set of
   
  - I'll proceed asuming that `cppcms-buildpack` is visible and enabled when you execute `cf builpacks`
 
-   However, if that is not the case but you have access to the [cppcms buildpack](https://github.com/cloudfoundry-community/cppcms-buildpack), you can use:
+   If that is not the case, but you have access to the [cppcms buildpack](https://github.com/cloudfoundry-community/cppcms-buildpack), you can use:
    
    `$ cf push counter -b https://github.com/cloudfoundry-community/cppcms-buildpack`
 
