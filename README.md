@@ -2,14 +2,16 @@
 C++ code to simulate a Monolithic App that takes 10 seconds to warm-up, and subsequently responds in 1 second.
 These time delays are easily changed in the code. Our goal is to create a set of steps that demonstrate how PCF responds to these larger Apps.
 
-## Assumptions to get started
+## Assumptions (Pre-requisites) to get started
 
-- You know how to use PCF and the CF CLI at a basic level - i.e. you have successfully pushed apps in the past.
+- You know how to use PCF and the [CF CLI](https://docs.cloudfoundry.org/cf-cli/install-go-cli.html) at a basic level - i.e. you have successfully pushed apps in the past.
 - You have access to a PCF (Org, Space) environment with enough quota to run this demo (20GB RAM).
-- Your CF CLI is able to access https://github.com/cloudfoundry-community/cppcms-buildpack
-- You have Jmeter  `brew install jmeter --with-plugins`
+- You have [Jmeter](https://jmeter.apache.org/) i.e. `brew install jmeter --with-plugins`
 - You have a page auto-refresh plug-in for your [browser](https://chrome.google.com/webstore/detail/page-refresh/hmooaemjmediafeacjplpbpenjnpcneg?hl=en)
-- You have a recent CF CLI with the [Zero-Downtime-Push Plugin](https://github.com/contraband/autopilot)
+- You have a recent [CF CLI](https://docs.cloudfoundry.org/cf-cli/install-go-cli.html) with the [Zero-Downtime-Push Plugin](https://github.com/contraband/autopilot)
+- You have the CF Recycle plugin i.e. `cf install-plugin -r CF-Community "cf-recycle-plugin"`
+- Your PC/Mac (CF CLI) is able to access https://github.com/cloudfoundry-community/cppcms-buildpack
+- If not, please make sure you have CF LOCAL `cf install-plugin -r CF-Community "cflocal"`
 
 ## Let's get started
 
