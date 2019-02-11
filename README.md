@@ -389,6 +389,54 @@ And eventually, after a few minutes, you should see something similar to this:
 ![](https://github.com/rm511130/cpp-warmup-then-fast/blob/master/http-health-step3.png)
 
 
+23. Let's test the resilience of our `counter` app now that we habe `http` as its health-check-type. While the test you started in step 22 is still running, issue the following command:
+
+```
+$ cf recycle counter
+```
+
+
+
+
+24. While the previous test environment is still running, try to `cf ssh` into one of the instances of your `counter` App, then issue a `ps -ef` command to see what's happening:
+
+```
+$ cf ssh counter
+
+vcap@d669e468-61a0-4831-4eba-4e26:~$ ps -ef
+UID          PID    PPID  C STIME TTY          TIME CMD
+root           1       0  0 15:54 ?        00:00:00 /tmp/garden-init
+vcap          16       0  0 15:55 ?        00:00:00 /tmp/lifecycle/diego-sshd --allowedKeyExchanges= --address=0.0.0.0:2222 --allowUnauthenticatedC
+vcap          23       0  0 15:55 ?        00:00:00 make run
+vcap          56      23  0 15:55 ?        00:00:00 ./counter -c cppcms.js
+root         100       0  0 15:55 ?        00:00:00 sh -c trap 'kill -9 0' TERM; /etc/cf-assets/envoy/envoy -c /etc/cf-assets/envoy_config/envoy.ya
+root         121     100  3 15:55 ?        00:00:03 /etc/cf-assets/envoy/envoy -c /etc/cf-assets/envoy_config/envoy.yaml --service-cluster proxy-cl
+root         138       0  0 15:55 ?        00:00:00 /etc/cf-assets/healthcheck/healthcheck -port=8080 -timeout=15000ms -uri=/ -liveness-interval=30
+vcap         156      16  0 15:56 pts/0    00:00:00 /bin/bash
+vcap         169     156  0 15:56 pts/0    00:00:00 ps -ef
+vcap@d669e468-61a0-4831-4eba-4e26:~$ ps -ef | more
+UID          PID    PPID  C STIME TTY          TIME CMD
+root           1       0  0 15:54 ?        00:00:00 /tmp/garden-init
+vcap          16       0  0 15:55 ?        00:00:00 /tmp/lifecycle/diego-sshd --allowedKeyExchanges= --address=0.0.0.0:2222 --allowUnauthenticatedC
+lients=false --inheritDaemonEnv=true --allowedCiphers= --allowedMACs= --logLevel=fatal --debugAddr=
+vcap          23       0  0 15:55 ?        00:00:00 make run
+vcap          56      23  0 15:55 ?        00:00:00 ./counter -c cppcms.js
+root         100       0  0 15:55 ?        00:00:00 sh -c trap 'kill -9 0' TERM; /etc/cf-assets/envoy/envoy -c /etc/cf-assets/envoy_config/envoy.ya
+ml --service-cluster proxy-cluster --service-node proxy-node --drain-time-s 900 --log-level critical& pid=$!; wait $pid
+root         121     100  3 15:55 ?        00:00:04 /etc/cf-assets/envoy/envoy -c /etc/cf-assets/envoy_config/envoy.yaml --service-cluster proxy-cl
+uster --service-node proxy-node --drain-time-s 900 --log-level critical
+root         138       0  0 15:55 ?        00:00:00 /etc/cf-assets/healthcheck/healthcheck -port=8080 -timeout=15000ms -uri=/ -liveness-interval=30
+s
+vcap         156      16  0 15:56 pts/0    00:00:00 /bin/bash
+vcap         170     156  0 15:56 pts/0    00:00:00 ps -ef
+vcap         171     156  0 15:56 pts/0    00:00:00 /bin/bash
+```
+
+Note the line corresponding to `PID 138` (shown below), you can see that `health-check` is no using `uri=/` and a `timeout` of 15s to determine whether the App is healthy or not. It's checking every `liveness-interval` 30 seconds.
+
+```
+/etc/cf-assets/healthcheck/healthcheck -port=8080 -timeout=15000ms -uri=/ -liveness-interval=30
+```
 
 
 
