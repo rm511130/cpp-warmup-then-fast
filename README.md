@@ -448,7 +448,7 @@ Note the line corresponding to `PID 138`:
 /etc/cf-assets/healthcheck/healthcheck -port=8080 -timeout=15000ms -uri=/ -liveness-interval=30
 ```
 
-You can see that `health-check` is no using `uri=/` and a `timeout` of 15s to determine whether the App is healthy or not. It's checking every `liveness-interval` 30 seconds.
+You can see that `health-check` is no using `uri=/` and a `timeout` of 15s to determine whether the App is healthy or not. It's checking every `liveness-interval` of 30 seconds.
 
 
 25. While still logged into a container via `cf ssh`, look for the PID of `/tmp/lifecycle/diego-sshd`, which in my case is `16` and issue a `kill -9` command:
@@ -486,6 +486,13 @@ time                          event                      actor     description
 ```
 
 At the top of the list you have the crash event.
+
+27. What did we learn from all this?
+
+- (a) the http health-check-type can mittigate the issues related to slow-to-start Apps
+- (b) an App that crashes will always lead to some errors.
+- (c) when using http health-check-type, use the sequence of commands seen in [`update-counter.sh`](https://github.com/rm511130/cpp-warmup-then-fast/blob/master/update-counter.sh)
+
 
 
 ## Congratulations, you have completed the Lab.
