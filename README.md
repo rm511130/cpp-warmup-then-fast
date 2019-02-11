@@ -10,6 +10,8 @@ These time delays are easily changed in the code. Our goal is to create a set of
 - You have [Java](https://www.java.com/en/) & [Jmeter](https://jmeter.apache.org/) i.e. `brew install jmeter --with-plugins`
 - You have a page auto-refresh plug-in for your [browser](https://chrome.google.com/webstore/detail/page-refresh/hmooaemjmediafeacjplpbpenjnpcneg?hl=en)
 - You have a recent [CF CLI](https://docs.cloudfoundry.org/cf-cli/install-go-cli.html) with the [Zero-Downtime-Push Plugin](https://github.com/contraband/autopilot)
+
+Alternatively, try: `cf install-plugin -r CF-Community "autopilot"`
 - You have the CF Recycle plugin - `cf install-plugin -r CF-Community "cf-recycle-plugin"`
 
 ## An additional requirement
