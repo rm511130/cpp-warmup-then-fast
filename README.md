@@ -368,9 +368,9 @@ cf delete counter -f                                                # delete all
 cf rename counter-new counter                                       # rename counter-new to counter
 ```
 
-What is it going to do? When trying something out for the 1st time, it's important to always think through what you expect will happen before testing and validating your assumptions.
+When trying something out for the 1st time, it's important to always think through what you expect will happen before testing and validating your assumptions.
 
-Let's execute the switch:
+Let's execute the zero-downtime switch of the Apps - going from blue-font to green-font:
 
 ```
 $ ./update-counter.sh
