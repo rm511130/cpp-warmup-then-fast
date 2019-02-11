@@ -276,7 +276,9 @@ If you execute this test a few times, you will see that sometimes the JMeter log
 <stringProp name="HTTPSampler.response_timeout">500</stringProp>
 ```
 
-(b) Re-start the JMeter tests against the 3 Blue-Font Counter App instances and observe the results:
+(b) Re-start the JMeter tests against the 3 Blue-Font Counter App instances and observe the results. Make sure that auto-scaling is off:
+
+
 
 
 
