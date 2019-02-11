@@ -92,8 +92,10 @@ cf push
 7. Using the terminal window immediately above, issue the command:
 
 ```
-cf logs counter
+cf logs counter | grep -v "cppcms_http, info: GET"
 ```
+
+_Note: the `grep -v` is to eliminate an extraneous cppcms error message_
 
 8. Navigate to the Apps Manager window and make sure you can see the *Events, App Summary, Processes and Instances* under the *Overview* tab for the *Counter* app.
 
@@ -267,22 +269,77 @@ And seconds after that, here's a snapshot of what you should see:
 
 If you execute this test a few times, you will see that sometimes the JMeter logs will register anything from a handfull of errors to 200+ errors under very similar conditions. It just depends on how many concurrent requests were in flight or scheduled to be handled by the App that was killed.
 
-21. What happens when the JMeter App is less tolerant of delays
+21. What happens when the JMeter App is less tolerant of delays. Let's stop the JMeter tests to make some changes:
 
-(a) Edit the `x-plan.jmx` file to change the following two lines from 60s to just 0.5s as shown below. Note that 0.5s is 6x the average response time we had been observing until now.
+(a) Edit the `x-plan.jmx` file to change the following two lines from 60s to just 0.5s as shown below. Note that 0.5s is 6x the average response time we had been observing until now. Keep the `x-plan.jmx` file open for editting. 
 
 ```
 <stringProp name="HTTPSampler.connect_timeout">500</stringProp>
 <stringProp name="HTTPSampler.response_timeout">500</stringProp>
 ```
 
-(b) Re-start the JMeter tests against the 3 Blue-Font Counter App instances and observe the results. Make sure that auto-scaling is off:
+(b) Edit the `x-plan.jmx` file to change the second line shown below from 500 to just 100 concurrent users.
 
+```
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">100</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">30</stringProp>
+        <longProp name="ThreadGroup.start_time">1426169651000</longProp>
+        <longProp name="ThreadGroup.end_time">1426169651000</longProp>
+```
 
+(c) Re-start the JMeter tests against the 3 Blue-Font Counter App instances and observe the results. Make sure that auto-scaling is off before you start JMeter.
 
+```
+$ jmeter -n -t x-plan.jmx | awk '/Active/{ print $0; }'
+summary +    222 in 00:00:29 =    7.6/s Avg:   207 Min:    77 Max:   544 Err:     0 (0.00%) Active: 98 Started: 98 Finished: 0
+summary +    546 in 00:00:30 =   18.3/s Avg:   616 Min:    92 Max:  1245 Err:   152 (27.84%) Active: 100 Started: 100 Finished: 0
+summary +    507 in 00:00:30 =   17.0/s Avg:   639 Min:   104 Max:   998 Err:   109 (21.50%) Active: 100 Started: 100 Finished: 0
+summary +    544 in 00:00:30 =   18.0/s Avg:   603 Min:    77 Max:  1143 Err:   111 (20.40%) Active: 100 Started: 100 Finished: 0
+summary +    514 in 00:00:30 =   17.2/s Avg:   660 Min:    92 Max:  1151 Err:   169 (32.88%) Active: 100 Started: 100 Finished: 0
+```
 
+Interesting, right? Our JMeter script considers anything response above 0.5s to be an error, so we see a bunch of errors being reported when in reality our `counter` App is working well (except for the fact that it can't hit the 0.5s every time).
 
+_Note: depending on the speed of your PCF system, you may need to alter the threshold in your `x-plan.jmx` file to some value other than 500 to get the desired effect we are exemplifying here._
 
+(d) Stop the JMeter test and change the `x-plan.jmx` file to 5s (5000ms) then re-start the JMeter tests against the 3 Blue-Font Counter App instances and observe the results.
+
+```
+<stringProp name="HTTPSampler.connect_timeout">5000</stringProp>
+<stringProp name="HTTPSampler.response_timeout">5000</stringProp>
+```
+
+Here's what my system reported:
+
+```
+$ jmeter -n -t x-plan.jmx | awk '/Active/{ print $0; }'
+summary +     28 in 00:00:12 =    2.4/s Avg:   157 Min:   104 Max:   397 Err:     0 (0.00%) Active: 40 Started: 40 Finished: 0
+summary +    420 in 00:00:30 =   14.0/s Avg:   411 Min:    71 Max:  1623 Err:     0 (0.00%) Active: 100 Started: 100 Finished: 0
+summary +    330 in 00:00:31 =   10.7/s Avg:  2713 Min:   317 Max:  3492 Err:     0 (0.00%) Active: 100 Started: 100 Finished: 0
+summary +    400 in 00:00:33 =   12.2/s Avg:  3280 Min:  2455 Max:  4123 Err:     0 (0.00%) Active: 100 Started: 100 Finished: 0
+summary +    700 in 00:00:58 =   12.0/s Avg:  3252 Min:  1937 Max:  3631 Err:     0 (0.00%) Active: 100 Started: 100 Finished: 0
+summary +    400 in 00:00:33 =   12.0/s Avg:  3282 Min:  3107 Max:  3548 Err:     0 (0.00%) Active: 100 Started: 100 Finished: 0
+```
+
+No errors, my `counter` App responds withing the 5s threshold.
+
+(e) While the test you started in step (d) is still running, issue the following command:
+
+```
+$ cf recycle counter
+```
+
+Here's what happened to my JMeter test results:
+
+```
+summary +    700 in 00:00:58 =   12.0/s Avg:  3319 Min:  2362 Max:  3573 Err:     0 (0.00%) Active: 100 Started: 100 Finished: 0
+summary +    400 in 00:00:31 =   13.1/s Avg:  3336 Min:   379 Max:  3586 Err:    12 (3.00%) Active: 100 Started: 100 Finished: 0
+summary +    401 in 00:00:32 =   12.6/s Avg:  2882 Min:   121 Max:  8013 Err:    32 (7.98%) Active: 100 Started: 100 Finished: 0
+summary +    436 in 00:00:31 =   14.0/s Avg:  1757 Min:   115 Max:  2943 Err:     0 (0.00%) Active: 100 Started: 100 Finished: 0
+```
+
+I started to see errors because the recycling of app instances made some of my tests incurr the 10s 1st use penalty.
 
 
 
