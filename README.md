@@ -368,7 +368,7 @@ cf delete counter -f                                                # delete all
 cf rename counter-new counter                                       # rename counter-new to counter
 ```
 
-When trying something out for the 1st time, it's important to always think through what you expect will happen before testing and validating your assumptions.
+When trying something for the 1st time, it's important to always think through what you expect will happen before testing and validating your assumptions.
 
 Let's execute the zero-downtime switch of the Apps - going from blue-font to green-font:
 
@@ -389,16 +389,26 @@ And eventually, after a few minutes, you should see something similar to this:
 ![](https://github.com/rm511130/cpp-warmup-then-fast/blob/master/http-health-step3.png)
 
 
-23. Let's test the resilience of our `counter` app now that we habe `http` as its health-check-type. While the test you started in step 22 is still running, issue the following command:
+23. Let's test the resilience of our `counter` app now that we habe `http` as its health-check-type. 
+
+While the test you started in step 22 is still running, issue the following command:
 
 ```
 $ cf recycle counter
 ```
 
+You should initially see something like this:
+
+![](https://github.com/rm511130/cpp-warmup-then-fast/blob/master/recycling_01.png)
+
+And eventually:
+
+![](https://github.com/rm511130/cpp-warmup-then-fast/blob/master/recycling_02.png)
+
+_Note: the `cf recycle` plugin is a bit temperamental... so if it doesn't move past instance 0, just stop and restart it_
 
 
-
-24. While the previous test environment is still running, try to `cf ssh` into one of the instances of your `counter` App, then issue a `ps -ef` command to see what's happening:
+24. While the previous test is still running, try to `cf ssh` into one of the instances of your `counter` App, then issue a `ps -ef` command to see what's happening:
 
 ```
 $ cf ssh counter
@@ -432,19 +442,53 @@ vcap         170     156  0 15:56 pts/0    00:00:00 ps -ef
 vcap         171     156  0 15:56 pts/0    00:00:00 /bin/bash
 ```
 
-Note the line corresponding to `PID 138` (shown below), you can see that `health-check` is no using `uri=/` and a `timeout` of 15s to determine whether the App is healthy or not. It's checking every `liveness-interval` 30 seconds.
+Note the line corresponding to `PID 138`:
 
 ```
 /etc/cf-assets/healthcheck/healthcheck -port=8080 -timeout=15000ms -uri=/ -liveness-interval=30
 ```
 
+You can see that `health-check` is no using `uri=/` and a `timeout` of 15s to determine whether the App is healthy or not. It's checking every `liveness-interval` 30 seconds.
 
 
+25. While still logged into a container via `cf ssh`, look for the PID of `/tmp/lifecycle/diego-sshd`, which in my case is `16` and issue a `kill -9` command:
+
+```
+vcap@5d022fbc-c04d-41bc-77b6-8992:~$ kill -9 16 
+FAILED
+Error: wait: remote command exited without exit status or exit signal
+```
+
+Now go back to your display screen and take a look:
+
+![](https://github.com/rm511130/cpp-warmup-then-fast/blob/master/after-a-crash.png)
 
 
+26. On a terminal window, try a `cf events counter` command. You should not be cf ssh'ed into a container:
+
+```
+$ cf events counter
+Getting events for app counter in org demo / space demo as admin...
+
+time                          event                      actor     description
+2019-02-11T11:13:34.00-0500   app.crash                  counter   index: 0, reason: CRASHED, cell_id: ab12bc9e-b794-4c3d-9d04-55489c3db239, instance: 5d022fbc-c04d-41bc-77b6-8992, exit_description: CELL/SSHD: Exited with status 137
+2019-02-11T11:13:04.00-0500   audit.app.ssh-authorized   admin     index: 0
+2019-02-11T10:36:39.00-0500   audit.app.update           admin
+2019-02-11T10:32:19.00-0500   audit.app.update           admin
+2019-02-11T10:32:18.00-0500   audit.app.map-route        admin
+2019-02-11T10:31:13.00-0500   audit.app.droplet.create   admin
+2019-02-11T10:29:46.00-0500   audit.app.update           admin     state: STARTED
+2019-02-11T10:29:46.00-0500   audit.app.build.create     admin
+2019-02-11T10:29:45.00-0500   audit.app.process.update   admin     command: [PRIVATE DATA HIDDEN]
+2019-02-11T10:28:55.00-0500   audit.app.upload-bits      admin
+2019-02-11T10:28:55.00-0500   audit.app.map-route        admin
+2019-02-11T10:28:55.00-0500   audit.app.create           admin     disk_quota: 1024, instances: 3, memory: 1024, state: STOPPED, environment_json: [PRIVATE DATA HIDDEN]
+```
+
+At the top of the list you have the crash event.
 
 
-
+## Congratulations, you have completed the Lab.
 
 
 
