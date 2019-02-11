@@ -339,9 +339,54 @@ summary +    401 in 00:00:32 =   12.6/s Avg:  2882 Min:   121 Max:  8013 Err:   
 summary +    436 in 00:00:31 =   14.0/s Avg:  1757 Min:   115 Max:  2943 Err:     0 (0.00%) Active: 100 Started: 100 Finished: 0
 ```
 
-I started to see errors because the recycling of app instances made some of my tests incurr the 10s 1st use penalty.
+I started to see errors because the recycling of app instances made some of my tests incurr the 10s 1st-use penalty.
 
 
+22. Time to switch to `health-check-type http` and see if we can fix the 10s penalty problem.
+
+While still running the previous JMeter test, edit your `counter.cpp` and change the font color:
+
+```
+        "<font color=\"green\">\n";
+```
+
+Remember to save the file.
+
+Now, take a look at the [`update-counter.sh`](https://github.com/rm511130/cpp-warmup-then-fast/blob/master/update-counter.sh)
+
+```
+cf push counter-new -i 3 --no-start                                 # push the counter app with a different name & no-start
+cf v3-set-health-check counter-new http --invocation-timeout 15     # set health-check-type to http
+cf start counter-new                                                # start the counter-new app
+cf app counter-new | awk '/starting/{ system("sleep 1"); }' .       # wait until it's running
+cf app counter-new                                                  # getting stats on counter
+cf map-route counter-new apps.pcf4u.com --hostname counter .        # map counter's route to counter-new, we should see green
+cf unmap-route counter apps.pcf4u.com --hostname counter            # unmap the original counter app from its route
+cf app counter                                                      # getting stats on counter
+cf stop counter                                                     # stop all 3 instances of counter
+cf delete counter -f                                                # delete all 3 instances of counter
+cf rename counter-new counter                                       # rename counter-new to counter
+```
+
+What is it going to do? When trying something out for the 1st time, it's important to always think through what you expect will happen before testing and validating your assumptions.
+
+Let's execute the switch:
+
+```
+$ ./update-counter.sh
+```
+
+You should first notice that Apps Manager will be showing `counter-new` going through its phases:
+
+![](https://github.com/rm511130/cpp-warmup-then-fast/blob/master/http-health.png)
+
+When `counter-new` is up and running, and it has passed its health-check, you will see something like this:
+
+![](https://github.com/rm511130/cpp-warmup-then-fast/blob/master/http-health-step2.png)
+
+And eventually, after a few minutes, you should see something similar to this:
+
+![](https://github.com/rm511130/cpp-warmup-then-fast/blob/master/http-health-step3.png)
 
 
 
